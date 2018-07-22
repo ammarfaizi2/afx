@@ -10,6 +10,4 @@ if ($user !== "root") {
 	mxit("You must run this script as root!");
 }
 
-if (file_exists("filename")) {
-	# code...
-}
+

@@ -1,5 +1,15 @@
 #!/usr/bin/env php
 <?php
 
+require __DIR__."/icetea.config.php";
+require __DIR__."/bootstrap/icetea_bootstrap.php";
 
+$user = shf("whoami");
 
+if ($user !== "root") {
+	mxit("You must run this script as root!");
+}
+
+if (file_exists("filename")) {
+	# code...
+}

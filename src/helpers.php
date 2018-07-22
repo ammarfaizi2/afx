@@ -25,3 +25,37 @@ if (! function_exists("mxit")) {
 		exit($code);
 	}
 }
+
+if (! function_exists("rfilescanner")) {
+	/**
+	 * @param string $dir
+	 * @param string $match
+	 * @return array
+	 */
+	function rfilescanner($dir, $match = null)
+	{
+		$result = [];
+		$scan = scandir($dir);
+		unset($scan[0], $scan[1]);
+		if (is_string($match)) {
+			foreach ($scan as $file) {
+				if (is_dir($dir."/".$file)) {
+					$result = array_merge($result, rfilescanner($dir."/".$file, $match));
+				} else {
+					if (preg_match($match, $file)) {
+						$result[] = realpath($dir."/".$file);	
+					}
+				}
+			}
+		} else {
+			foreach ($scan as $file) {
+				if (is_dir($dir."/".$file)) {
+					$result = array_merge($result, rfilescanner($dir."/".$file));
+				} else {
+					$result[] = realpath($dir."/".$file);
+				}
+			}
+		}
+		return $result;
+	}
+}

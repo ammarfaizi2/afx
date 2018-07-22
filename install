@@ -7,7 +7,12 @@ require __DIR__."/bootstrap/icetea_bootstrap.php";
 $user = shf("whoami");
 
 if ($user !== "root") {
-	mxit("You must run this script as root!");
+	mxit("You must run this script as root!", 1);
 }
 
+$installer = new Installer\Installer;
+
+if ($installer->isInstalled()) {
+	mxit("IceTea has installed, please uninstall first!", 1);
+}
 

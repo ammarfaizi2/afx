@@ -16,3 +16,4 @@ if ($installer->isInstalled()) {
 	mxit("IceTea has installed, please uninstall first!", 1);
 }
 
+$installer->install();

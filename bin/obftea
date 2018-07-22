@@ -4,3 +4,5 @@ require __DIR__."/../icetea.config.php";
 require __DIR__."/../bootstrap/icetea_bootstrap.php";
 
 
+$st = new Obfuscator\Obfuscator("a.php", "b.php", "icetea");
+$st->obfuscate();

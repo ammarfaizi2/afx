@@ -42,7 +42,7 @@ if (! function_exists("rfilescanner")) {
 				if (is_dir($dir."/".$file)) {
 					$result = array_merge($result, rfilescanner($dir."/".$file, $match));
 				} else {
-					if (preg_match($match, $file)) {
+					if (preg_match($match, $dir."/".$file)) {
 						$result[] = realpath($dir."/".$file);	
 					}
 				}
@@ -57,5 +57,39 @@ if (! function_exists("rfilescanner")) {
 			}
 		}
 		return $result;
+	}
+}
+
+if (! function_exists("rfilescanner_callback")) {
+	/**
+	 * @param string   $dir
+	 * @param callable $callback
+	 * @param string   $match
+	 * @return void
+	 */
+	function rfilescanner_callback($dir, $callback, $match = null)
+	{
+		$result = [];
+		$scan = scandir($dir);
+		unset($scan[0], $scan[1]);
+		if (is_string($match)) {
+			foreach ($scan as $file) {
+				if (is_dir($dir."/".$file)) {
+					rfilescanner_callback($dir."/".$file, $callback, $match);
+				} else {
+					if (preg_match($match, $dir."/".$file)) {
+						$callback(realpath($dir."/".$file));
+					}
+				}
+			}
+		} else {
+			foreach ($scan as $file) {
+				if (is_dir($dir."/".$file)) {
+					rfilescanner_callback($dir."/".$file, $callback, $match);
+				} else {
+					$callback(realpath($dir."/".$file));
+				}
+			}
+		}
 	}
 }

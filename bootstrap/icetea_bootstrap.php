@@ -7,7 +7,11 @@
 function iceteaInternalClassAutoloader($class)
 {
 	$class = str_replace("\\", "/", $class);
-	require ICETEA_SOURCE_PATH."/classes/".$class.".php";
+	if (file_exists($file = ICETEA_SOURCE_PATH."/classes/".$class.".php")) {
+		require $file;
+	} elseif (file_exists($file = ICETEA_SOURCE_PATH."/phx/".$class.".phx")) {
+		require $file;
+	}
 }
 
 spl_autoload_register("iceteaInternalClassAutoloader");

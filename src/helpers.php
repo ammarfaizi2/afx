@@ -78,7 +78,7 @@ if (! function_exists("rfilescanner_callback")) {
 					rfilescanner_callback($dir."/".$file, $callback, $match);
 				} else {
 					if (preg_match($match, $dir."/".$file)) {
-						$callback(realpath($dir."/".$file));
+						$callback(($dir."/".$file));
 					}
 				}
 			}
@@ -87,7 +87,7 @@ if (! function_exists("rfilescanner_callback")) {
 				if (is_dir($dir."/".$file)) {
 					rfilescanner_callback($dir."/".$file, $callback, $match);
 				} else {
-					$callback(realpath($dir."/".$file));
+					$callback(($dir."/".$file));
 				}
 			}
 		}

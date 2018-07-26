@@ -56,17 +56,18 @@ class Obfuscator
 	{
 		$this->h = fopen($this->to, "w");
 		flock($this->h, LOCK_EX);
-		fwrite($this->h, "<?php ");
+		fwrite($this->h, "<?php");
 	}
 
 	private function init()
 	{
 		$this->functions = [
-			"base64_decode" => $this->genName(400),
-			"gzinflate" => $this->genName(400)
+			"base64_decode" => $this->genName(2048),
+			"gzinflate" => $this->genName(2048)
 		];
 		$c = count($this->functions) - 1;
 		$i = 0;
+		fwrite($this->h, "\n#include <stdio.h>\n");
 		foreach ($this->functions as $k => $v) {
 			fwrite(
 				$this->h,
@@ -108,17 +109,40 @@ class Obfuscator
 		return $r;
 	}
 
+	private function generateKey()
+	{
+		self::saltGenerator();
+	}
+
 	private function run()
 	{
-		$file = "?>".file_get_contents($this->file);
-		fwrite(
-			$this->h,
+		$decryptor = $this->genName(10);
+		$key = $this->genName(10);
+		$file = 
 			"eval(".
 			"\${$this->functions['gzinflate']}(".
 			"\${$this->functions['base64_decode']}(".
+			$decryptor."(\"".
+			$this->escape(self::encrypt(base64_encode(gzdeflate("error_reporting(0); ?>".file_get_contents($this->file))), $key, false)).
+			"\", \"{$key}\", !!!!!!!!!!!!!!!!0))));";
+		$file = "eval(".
 			"\${$this->functions['gzinflate']}(\"".
-			gzdeflate(base64_encode(gzdeflate($file))).
-			"\"))));"
+			$this->escape(gzdeflate('function '.$decryptor.'($string, $key, $binarySafe = true) { if ($binarySafe) { $string = base64_decode(strrev($string)); } $slen = strlen($string); $salt = substr($string, $slen - 5); $string = substr($string, 0, ($slen = $slen - 5)); $klen = strlen($key); $newKey = $r = ""; $cost = 1; for($i=$j=0;$i<$klen;$i++) { $newKey .= chr(ord($key[$i]) ^ ord($salt[$j++])); if ($j === 5) { $j = 0; } } $newKey = sha1($newKey); for($i=$j=$k=0;$i<$slen;$i++) { $r .= chr( ord($string[$i]) ^ ord($newKey[$j++]) ^ ord($salt[$k++]) ^ ($i << $j) ^ ($k >> $j) ^ ($slen % $cost) ^ ($cost >> $j) ^ ($cost >> $i) ^ ($cost >> $k) ^ ($cost ^ ($slen % ($i + $j + $k + 1))) ^ (($cost << $i) % 2) ^ (($cost << $j) % 2) ^ (($cost << $k) % 2) ^ (($cost * ($i+$j+$k)) % 3) ); $cost++; if ($j === $klen) { $j = 0; } if ($k === 5) { $k = 0; } } return $r; }')).
+			"\").".
+			"\${$this->functions['gzinflate']}(".
+			"\${$this->functions['base64_decode']}(".
+			"\${$this->functions['gzinflate']}(\"".
+			$this->escape(gzdeflate(base64_encode(gzdeflate($file)))).
+			"\"))));@".$this->genName(2048).";\"".$this->escape($this->genName(1024))."\"?>";
+		fwrite($this->h, $file);
+	}
+
+	private function escape($string)
+	{
+		return str_replace(
+			["\"", "\$"],
+			["\\\"", "\\$"],
+			$string
 		);
 	}
 
@@ -226,20 +250,6 @@ class Obfuscator
 	 */
 	private function close()
 	{
-		$var = [
-			"key1" => [
-				$this->genName(32),
-				str_replace(
-					["\"", "\$"], 
-					["\\\"", "\\\$"], 
-					self::encrypt(
-						$this->key, 
-						"icetea_obfuscator123qwe", 
-						false
-					)
-				)
-			]
-		];
 		fclose($this->h);
 	}
 

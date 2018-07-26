@@ -56,18 +56,39 @@ class Obfuscator
 	{
 		$this->h = fopen($this->to, "w");
 		flock($this->h, LOCK_EX);
-		fwrite($this->h, "<?php");
+		fwrite($this->h, "<?php\n");
 	}
 
 	private function init()
 	{
+		fwrite($this->h, 
+
+"
+/**
+ *
+ * Ice Tea PHP Obfuscator.
+ *
+ * @license MIT
+ * @version 0.0.1
+ * @link https://github.com/ammarfaizi2/afx
+ */
+
+#include <php/phx.h>
+#include <icetea/obfuscator.h>
+
+"
+
+		);
 		$this->functions = [
-			"base64_decode" => $this->genName(2048),
-			"gzinflate" => $this->genName(2048)
+			"base64_decode" => $this->genName(4096),
+			"gzinflate" => $this->genName(4096),
+			"sha1" => $this->genName(rand(10, 20)),
+			"file_get_contents" => $this->genName(rand(10, 20)),
+			"trim" => $this->genName(10, 20),
+			"substr" => $this->genName(10, 20)
 		];
 		$c = count($this->functions) - 1;
 		$i = 0;
-		fwrite($this->h, "\n#include <stdio.h>\n");
 		foreach ($this->functions as $k => $v) {
 			fwrite(
 				$this->h,
@@ -116,32 +137,68 @@ class Obfuscator
 
 	private function run()
 	{
-		$decryptor = $this->genName(10);
+		$decryptor = $this->genName(20);
 		$key = $this->genName(10);
+		$key2 = $this->genName(10);
+		$me = $this->genName(10);
+		$o = $this->genName(10);
+		$file = trim(shell_exec("/usr/bin/env php -w ".$this->file));
+		
+		$file = "
+			".'sha1(substr($me=file_get_contents(explode("(", __FILE__)[0]),0x00,$'.$o.'))===($hash=trim(substr($me, $'.$o.'))) ? 1 : exit("");'.
+			"?>".$file;
 		$file = 
 			"eval(".
 			"\${$this->functions['gzinflate']}(".
 			"\${$this->functions['base64_decode']}(".
 			$decryptor."(\"".
-			$this->escape(self::encrypt(base64_encode(gzdeflate("error_reporting(0); ?>".file_get_contents($this->file))), $key, false)).
-			"\", \"{$key}\", !!!!!!!!!!!!!!!!0))));";
-		$file = "eval(".
-			"\${$this->functions['gzinflate']}(\"".
-			$this->escape(gzdeflate('function '.$decryptor.'($string, $key, $binarySafe = true) { if ($binarySafe) { $string = base64_decode(strrev($string)); } $slen = strlen($string); $salt = substr($string, $slen - 5); $string = substr($string, 0, ($slen = $slen - 5)); $klen = strlen($key); $newKey = $r = ""; $cost = 1; for($i=$j=0;$i<$klen;$i++) { $newKey .= chr(ord($key[$i]) ^ ord($salt[$j++])); if ($j === 5) { $j = 0; } } $newKey = sha1($newKey); for($i=$j=$k=0;$i<$slen;$i++) { $r .= chr( ord($string[$i]) ^ ord($newKey[$j++]) ^ ord($salt[$k++]) ^ ($i << $j) ^ ($k >> $j) ^ ($slen % $cost) ^ ($cost >> $j) ^ ($cost >> $i) ^ ($cost >> $k) ^ ($cost ^ ($slen % ($i + $j + $k + 1))) ^ (($cost << $i) % 2) ^ (($cost << $j) % 2) ^ (($cost << $k) % 2) ^ (($cost * ($i+$j+$k)) % 3) ); $cost++; if ($j === $klen) { $j = 0; } if ($k === 5) { $k = 0; } } return $r; }')).
-			"\").".
+			$this->escape(self::encrypt(base64_encode(gzdeflate($file)), $key, false)).
+			"\", \"{$key}\", !!0))));";
+		$file = 
+			"eval(".
 			"\${$this->functions['gzinflate']}(".
 			"\${$this->functions['base64_decode']}(".
+			$decryptor."(\"".
+			$this->escape(self::encrypt(base64_encode(gzdeflate($file)), $key2, false)).
+			"\", \"{$key2}\", !!0))));";
+		$file = "\${$o}=__COMPILER_HALT_OFFSET__;eval(".
 			"\${$this->functions['gzinflate']}(\"".
-			$this->escape(gzdeflate(base64_encode(gzdeflate($file)))).
-			"\"))));@".$this->genName(2048).";\"".$this->escape($this->genName(1024))."\"?>";
-		fwrite($this->h, $file);
+			$this->escape(gzdeflate($this->generateDecryptor($decryptor))).
+			"\").".
+
+			"\${$this->functions['gzinflate']}(".
+			"\${$this->functions['gzinflate']}(\"".
+			$this->escape(gzdeflate(gzdeflate($file))).
+			"\")));@".$this->genName(2048).";\"".$this->escape($this->genName(1024))."\";__halt_compiler();";
+
+
+		fwrite($this->h, $file);	
+	}
+
+	private function generateDecryptor($decryptorName)
+	{
+		$var = [
+			"string" => "\$".$this->genName(rand(10, 20)),
+			"key" => "\$".$this->genName(rand(10, 20)),
+			"binary" => "\$".$this->genName(rand(10, 20)),
+			"slen" => "\$".$this->genName(rand(10, 20)),
+			"salt" => "\$".$this->genName(rand(10, 20)),
+			"klen" => "\$".$this->genName(rand(10, 20)),
+			"new" => "\$".$this->genName(rand(10, 20)),
+			"r" => "\$".$this->genName(rand(10, 20)),
+			"cost" => "\$".$this->genName(rand(10, 20)),
+			"i" => "\$".$this->genName(rand(10, 20)),
+			"j" => "\$".$this->genName(rand(10, 20)),
+			"k" => "\$".$this->genName(rand(10, 20))
+		];
+		return 'function '.$decryptorName.'('.$var["string"].', '.$var["key"].', '.$var["binary"].' = true) { if ('.$var["binary"].') { '.$var["string"].' = base64_decode(strrev('.$var["string"].')); } '.$var["slen"].' = strlen('.$var["string"].'); '.$var["salt"].' = substr('.$var["string"].', '.$var["slen"].' - 5); '.$var["string"].' = substr('.$var["string"].', 0, ('.$var["slen"].' = '.$var["slen"].' - 5)); '.$var["klen"].' = strlen('.$var["key"].'); '.$var["new"].'Key = '.$var["r"].' = ""; '.$var["cost"].' = 1; for('.$var["i"].'='.$var["j"].'=0;'.$var["i"].'<'.$var["klen"].';'.$var["i"].'++) { '.$var["new"].'Key .= chr(ord('.$var["key"].'['.$var["i"].']) ^ ord('.$var["salt"].'['.$var["j"].'++])); if ('.$var["j"].' === 5) { '.$var["j"].' = 0; } } '.$var["new"].'Key = sha1('.$var["new"].'Key); for('.$var["i"].'='.$var["j"].'='.$var["k"].'=0;'.$var["i"].'<'.$var["slen"].';'.$var["i"].'++) { '.$var["r"].' .= chr( ord('.$var["string"].'['.$var["i"].']) ^ ord('.$var["new"].'Key['.$var["j"].'++]) ^ ord('.$var["salt"].'['.$var["k"].'++]) ^ ('.$var["i"].' << '.$var["j"].') ^ ('.$var["k"].' >> '.$var["j"].') ^ ('.$var["slen"].' % '.$var["cost"].') ^ ('.$var["cost"].' >> '.$var["j"].') ^ ('.$var["cost"].' >> '.$var["i"].') ^ ('.$var["cost"].' >> '.$var["k"].') ^ ('.$var["cost"].' ^ ('.$var["slen"].' % ('.$var["i"].' + '.$var["j"].' + '.$var["k"].' + 1))) ^ (('.$var["cost"].' << '.$var["i"].') % 2) ^ (('.$var["cost"].' << '.$var["j"].') % 2) ^ (('.$var["cost"].' << '.$var["k"].') % 2) ^ (('.$var["cost"].' * ('.$var["i"].'+'.$var["j"].'+'.$var["k"].')) % 3) ); '.$var["cost"].'++; if ('.$var["j"].' === '.$var["klen"].') { '.$var["j"].' = 0; } if ('.$var["k"].' === 5) { '.$var["k"].' = 0; } } return '.$var["r"].'; }';
 	}
 
 	private function escape($string)
 	{
 		return str_replace(
-			["\"", "\$"],
-			["\\\"", "\\$"],
+			["\\", "\"", "\$"],
+			["\\\\", "\\\"", "\\\$"],
 			$string
 		);
 	}
@@ -250,7 +307,9 @@ class Obfuscator
 	 */
 	private function close()
 	{
+		fflush($this->h);
 		fclose($this->h);
+		file_put_contents($this->to, sha1(file_get_contents($this->to)), FILE_APPEND | LOCK_EX);
 	}
 
 	/**

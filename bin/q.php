@@ -1,1 +1,0 @@
-<?php$a = explode("eval(", file_get_contents("b.php"), 2);eval("?>".$a[0]." \$clean = (".$a[1]);$a = explode("eval(", $clean, 2);eval($a[0]."\$clean = (".$a[1]);print $clean;

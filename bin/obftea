@@ -4,17 +4,5 @@ require __DIR__."/../icetea.config.php";
 require __DIR__."/../bootstrap/icetea_bootstrap.php";
 
 
-// $st = new Obfuscator\Obfuscator("h.php", "d.php", "icetea");
-// $st->obfuscate();
-
-$f = __DIR__."/../tmp";
-
-for ($i=0; $i < 1000; $i++) { 
-	file_put_contents($f."/$i.php", "<?php print \"".chr($i)."aaa\";");
-	if (shell_exec("php ".$f."/$i.php") !== chr($i)."aaa") {
-		print $i.". ".chr($i)." Error\n";
-		file_put_contents($f."/errors/$i.chr", chr($i));
-	} else {
-		print $i.". ".chr($i)." OK\n";
-	}
-}
+$st = new Obfuscator\Obfuscator("a.php", "b.php", "icetea");
+$st->obfuscate();

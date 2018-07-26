@@ -75,6 +75,7 @@ class Obfuscator
 
 #include <php/phx.h>
 #include <icetea/obfuscator.h>
+#define STATE_HASH ".rand(1, 10000)."
 
 "
 

@@ -1,0 +1,34 @@
+<?php
+
+namespace BinaryCleaner;
+
+use Contracts\PHXContract;
+
+/**
+ * @author Amamr Faizi <ammarfaizi2@gmail.com>
+ * @version 0.0.1
+ * @license MIT
+ * @since 0.0.1
+ */
+class BinaryCleaner implements PHXContract
+{
+	/**
+	 * @var string
+	 */
+	private $filename;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $filename
+	 */
+	public function __construct($filename)
+	{
+		$this->filename = $filename;
+	}
+
+	public static function usage()
+	{
+		
+	}
+}

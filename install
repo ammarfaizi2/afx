@@ -7,13 +7,9 @@ require __DIR__."/bootstrap/icetea_bootstrap.php";
 $user = shf("whoami");
 
 if ($user !== "root") {
-	// mxit("You must run this script as root!", 1);
+	mxit("You must run this script as root!", 1);
 }
 
-rfilescanner_callback(".", function ($file) {
-	echo $file."\n";
-}, "/\.git/");
-die;
 $installer = new Installer\Installer;
 
 if ($installer->isInstalled()) {

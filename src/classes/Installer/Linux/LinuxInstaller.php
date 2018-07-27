@@ -114,11 +114,20 @@ class LinuxInstaller
 		});
 
 		echo "\t{$i}. Linking icetea binary to /usr/bin/icetea ";
+		$i++;
 		if (link("/etc/icetea/linker/icetea", "/usr/bin/icetea")) {
 			echo "OK. Linked\n";
 			shell_exec("chmod 755 /usr/bin/icetea");
 		} else {
 			echo "Cannot create symbolic link to /usr/bin/icetea\n";
+		}
+		echo "\t{$i}. Linking icetea binary to /usr/bin/icetea ";
+		$i++;
+		if (link("/etc/icetea/linker/obftea", "/usr/bin/obftea")) {
+			echo "OK. Linked\n";
+			shell_exec("chmod 755 /usr/bin/obftea");
+		} else {
+			echo "Cannot create symbolic link to /usr/bin/obftea\n";
 		}
 	}
 }

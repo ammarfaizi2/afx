@@ -3,7 +3,58 @@
 require __DIR__."/../icetea.config.php";
 require __DIR__."/../bootstrap/icetea_bootstrap.php";
 
+use Obfuscator\Obfuscator;
 
-$st = new Obfuscator\Obfuscator("a.php", "b.php", "icetea");
+$opt = getopt("o:k:h",
+	[
+		"output:",
+		"key:",
+		"help"
+	]
+);
+
+array_shift($argv);
+
+if ($argc === 1 || isset($opt["help"]) || isset($opt["h"])) {
+	Obfuscator::usage();
+	exit(0);
+}
+
+$input = [];
+foreach ($argv as $arg) {
+	if ($arg[0] !== "-") {
+		$input = $arg;
+	}
+}
+
+$outputFile = "a.out";
+$key = "icetea123";
+
+if (isset($opt["o"])) {
+	$outputFile = $opt["o"];
+} elseif (isset($opt["output"])) {
+	$outputFile = $opt["output"];
+}
+
+if (isset($opt["k"])) {
+	$key = $opt["k"];
+} elseif (isset($opt["key"])) {
+	$key = $opt["key"];
+}
+
+if (!$input) {
+	mxit("Error: Please specify an input file!", 1);
+}
+
+if (is_array($outputFile)) {
+	mxit("Error: You can only specify one output file!", 1);
+}
+
+if (!file_exists($input)) {
+	mxit("Error: ".$input.": No such file or directory", 1);
+}
+
+$st = new Obfuscator($input, $outputFile, $key);
 $st->cli = true;
 $st->obfuscate();
+shell_exec("nohup sh -c \"chmod +x '".$outputFile."'\" >> /dev/null 2>&1 &");

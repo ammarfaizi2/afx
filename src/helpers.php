@@ -21,7 +21,7 @@ if (! function_exists("mxit")) {
 	 */
 	function mxit($msg, $code = 0)
 	{
-		echo $msg."\n";
+		fprintf(STDERR, "%s\n", $msg);
 		exit($code);
 	}
 }

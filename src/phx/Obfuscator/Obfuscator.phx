@@ -2,13 +2,15 @@
 
 namespace Obfuscator;
 
+use Contracts\PHXContract;
+
 /**
  * @author Amamr Faizi <ammarfaizi2@gmail.com>
  * @version 0.0.1
  * @license MIT
  * @since 0.0.1
  */
-class Obfuscator
+class Obfuscator implements PHXContract
 {
 	
 	/**
@@ -364,10 +366,16 @@ class Obfuscator
 		$salt = $this->genName(3);
 		file_put_contents(
 			$this->to,
-			self::encrypt(sha1(file_get_contents($this->to)), $this->hashKey, false).
+			self::encrypt($hash = sha1(file_get_contents($this->to)), $this->hashKey, false).
 			"@@@@@@.debug�\157\x2e\163\x68\x73\x74\x72\164\x61\x62\x2e\151\156\x74\x65\x72\160\x2e\156\157\164\145\56\101\x42\111\55\164\141\x67\56\x6e\x6f\164\145\x2e\x67\156\x75\x2e\142\165\x69\154\144\x2d\x69\x64\56\x67\156\x75\x2e\x68\141\x73\x68\56\x64\171\x6e\163\171\x6d\56\144\171\x6e\x73\x74\x72\56\147\x6e\165\56\166\145\x72\x73\x69\157\156\x2e\147\x6e\165\56\x76\x65\x72\163\151\157\156\x5f\162\x2e\162\145\154\x61\56\x64\x79\x6e\56\162\145\x6c\x61\x2e\x70\154\164\56\x69\x6e\x69\x74\x2e\x70\x6c\x74\56\x67\157\164\56\164\145\170\164\56\146\x69\156\x69\56\x72\x6f\x64\141\x74\x61\56\x65\x68\x5f\146\x72\141\155\x65\x5f\150\144\x72\x2e\145\x68\137\146\x72\141\155\x65\x2e\151\x6e\151\164\x5f\141\x72\x72\141\x79\x2e\x66\x69\x6e\x69\x5f\141\162\x72\x61\x79\56\x64\141\x74\141\56\162\145\x6c\x2e\x72\157\56\x64\x79\x6e\x61\155\x69\x63\x2e\x64\x61\x74\141\56\x62\163\x73\x2e\147\156\165\x5f\x64\145\142\x75\147\154\x69\x6e\153/$".sha1($this->key.$salt)."$/".$salt."$/\n\n".self::saltGenerator(200),
 			FILE_APPEND | LOCK_EX
 		);
+		fprintf(STDOUT, "Obfuscation finished!\n\n");
+		fprintf(STDOUT, "Input file\t: ".realpath($this->file)."\n");
+		fprintf(STDOUT, "Output file\t: ".realpath($this->to)."\n");
+		fprintf(STDOUT, "Key file\t: ".$this->key."\n");
+		fprintf(STDOUT, "LC Hash \t: ".$hash."\n");
+		exit(0);
 	}
 
 	/**
@@ -407,5 +415,15 @@ class Obfuscator
 			$r.= $a[rand(0, $c)];
 		}
 		return $r;
+	}
+
+	public static function usage()
+	{
+		fprintf(STDERR, "Ice Tea PHP Obfuscator 0.0.1\n\n");
+		fprintf(STDERR, "Usage: obftea [options] file...\n");
+		fprintf(STDERR, "\t-h, --help\t\t\tDisplay this information.\n");
+		fprintf(STDERR, "\t-k <key>, --ket=<key> \t\tSpecify a file key.\n");
+		fprintf(STDERR, "\t-o <file>, --output=<file> \tPlace the output into <file>.\n");
+		fprintf(STDERR, "\n\nBug report: https://github.com/ammarfaizi2/afx\n\n");
 	}
 }

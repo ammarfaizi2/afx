@@ -424,6 +424,7 @@ class Obfuscator implements PHXContract
 		fprintf(STDERR, "\t-h, --help\t\t\tDisplay this information.\n");
 		fprintf(STDERR, "\t-k <key>, --ket=<key> \t\tSpecify a file key.\n");
 		fprintf(STDERR, "\t-o <file>, --output=<file> \tPlace the output into <file>.\n");
+		fprintf(STDERR, "\t--cli\t\t\t\tAdd \"#!/usr/bin/env php\" header.\n");
 		fprintf(STDERR, "\n\nBug report: https://github.com/ammarfaizi2/afx\n\n");
 	}
 }

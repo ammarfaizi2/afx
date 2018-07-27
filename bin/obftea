@@ -9,7 +9,8 @@ $opt = getopt("o:k:h",
 	[
 		"output:",
 		"key:",
-		"help"
+		"help",
+		"cli"
 	]
 );
 

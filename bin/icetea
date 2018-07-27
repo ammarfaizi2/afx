@@ -3,3 +3,19 @@
 require __DIR__."/../icetea.config.php";
 require __DIR__."/../bootstrap/icetea_bootstrap.php";
 
+if (! isset($argv[1])) {
+	print "Show help!\n";
+}
+
+
+
+switch ($argv[1]) {
+	case 'binarycleaner':
+	case 'binclean':
+
+		break;
+	
+	default:
+		# code...
+		break;
+}
